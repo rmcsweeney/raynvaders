@@ -25,7 +25,7 @@
 *   Copyright (c) 2013-2025 Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
-
+#include "stdio.h"
 #include "raylib.h"
 
 struct enemyStruct {
@@ -61,14 +61,20 @@ int main(void)
 	const int enemyPadding = 10;
 	const int enemyWidth = 30;
 	const int enemyHeight = 30;
-	enemyStruct level1[10];
-	for (int i = 0; i < level1.length; i++){
-		abs_pos = enemyPadding * (i +1) + i * enemyWidth;
-		level1[i].pos.x = abs_pos % screenWidth;
-		level1[i].pos.y = enemyPadding * (i + 1) + abs_pos / screenWidth * enemyHeight; 
-		level1[i].dead = false;
-		level1[i].texture = greengan_texture;		
-	
+	struct enemyStruct level1[10];
+	int level1_len = 10;
+	for (int i = 0; i < level1_len; i++){
+		int abs_pos = enemyPadding * (i +1) + i * enemyWidth;
+		printf("%d\n", abs_pos);
+		struct enemyStruct guy = level1[i];
+		int temp_x = enemyPadding * (i + 1) + i * enemyWidth;
+		//while (guy.pos.x > screenWidth) guy.pos.x -= screenWidth;
+		guy.pos.x = temp_x;
+		guy.pos.y = enemyPadding * (i + 1) + abs_pos / screenWidth * enemyHeight; 
+		printf("X and Y: %d %d\n", guy.pos.x, guy.pos.y);
+		guy.dead = false;
+		guy.texture = greengan_texture;		
+	}
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
@@ -92,9 +98,9 @@ int main(void)
             ClearBackground(RAYWHITE);
 			DrawTexture(greengan_texture, 50, 50, WHITE);
 			DrawTexture(ship_texture, ship_pos.x, ship_pos.y, WHITE);
-            for (int i = 0; i < level1.length; i++) {
-				enemyStruct guy = level1[i];
-				DrawTexture(guy.texture, guy.pos.x, guy.pos.y, WHITE);
+            for (int i = 0; i < level1_len; i++) {
+				struct enemyStruct guy = level1[i];
+				DrawTexture(greengan_texture, guy.pos.x, guy.pos.y, WHITE);
 			}
         EndDrawing();
         //----------------------------------------------------------------------------------
