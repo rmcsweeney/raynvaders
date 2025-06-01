@@ -44,10 +44,10 @@ int main(void)
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 300;
+    const int screenWidth = 360;
     const int screenHeight = 450;
 
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+    InitWindow(screenWidth, screenHeight, "Space Raynvaders");
 	
 	Vector2 ship_pos = { screenWidth / 2,  screenHeight * 8 / 10};
 	Image greengan = LoadImage("/home/ryan/Developer/c/raylib-test/assets/greengan.png");     // Loaded in CPU memory (RAM)
@@ -66,15 +66,30 @@ int main(void)
 	for (int i = 0; i < level1_len; i++){
 		int abs_pos = enemyPadding * (i +1) + i * enemyWidth;
 		printf("%d\n", abs_pos);
-		struct enemyStruct guy = level1[i];
-		int temp_x = enemyPadding * (i + 1) + i * enemyWidth;
-		//while (guy.pos.x > screenWidth) guy.pos.x -= screenWidth;
-		guy.pos.x = temp_x;
-		guy.pos.y = enemyPadding * (i + 1) + abs_pos / screenWidth * enemyHeight; 
-		printf("X and Y: %d %d\n", guy.pos.x, guy.pos.y);
-		guy.dead = false;
-		guy.texture = greengan_texture;		
+		struct enemyStruct *guy = &level1[i];
+		float temp_x = enemyPadding * (i + 1) + i * enemyWidth;
+		while (temp_x + enemyWidth > screenWidth) temp_x -= screenWidth + enemyWidth;
+		guy->pos.x = temp_x;
+		guy->pos.y = abs_pos / (screenWidth + enemyWidth) * enemyHeight; 
+		printf("X and Y: %f %f\n", guy->pos.x, guy->pos.y);
+		guy->dead = false;
+		guy->texture = greengan_texture;		
 	}
+
+    const float xes[6] = {60, 100, 140, 180, 220, 260};
+    const float yes[2] = {20, 70};
+    struct enemyStruct level2[12];
+    for (int i = 0; i < 12; i++){ 
+        struct enemyStruct *guy = &level2[i];
+        guy->pos.x = xes[i % 6];
+        if (i > 5) guy->pos.y = yes[1];
+        else guy->pos.y = yes[0];
+        guy->dead = false;
+        guy->texture = greengan_texture;
+    }
+
+    int level = 2;
+    float enemy_speed = 1;
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
@@ -90,18 +105,42 @@ int main(void)
 		//if (IsKeyDown(SPACE)) ship_pos.y += 0;
 		if (ship_pos.x < 0) ship_pos.x = 0;
 		if (ship_pos.x + 25 > screenWidth) ship_pos.x = screenWidth - 25; 
-		
+	    
+        //check collision
+        bool will_collide = false;
+        for (int i = 0; i < 12; i++) {
+           struct enemyStruct *guy = &level2[i];
+           if (guy->alive==true && (guy->pos.x + enemy_speed < 0 ||
+                guy->pos.x + enemy_speed + enemyWidth > screenWidth){
+                willCollide = true;
+                break;
+           }
+        }
+        if (willCollide) {
+            
+        }
+        else {
+            
+        }
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
             ClearBackground(RAYWHITE);
-			DrawTexture(greengan_texture, 50, 50, WHITE);
 			DrawTexture(ship_texture, ship_pos.x, ship_pos.y, WHITE);
-            for (int i = 0; i < level1_len; i++) {
-				struct enemyStruct guy = level1[i];
-				DrawTexture(greengan_texture, guy.pos.x, guy.pos.y, WHITE);
-			}
+            switch (level) {
+                case 1:
+                    for (int i = 0; i < level1_len; i++) {
+				        struct enemyStruct guy = level1[i];
+				        DrawTexture(greengan_texture, guy.pos.x, guy.pos.y, WHITE);
+			        }
+                    break;
+                case 2:
+                    for (int i = 0; i < 12; i++) {
+                        struct enemyStruct guy = level2[i];
+                        DrawTexture(greengan_texture, guy.pos.x, guy.pos.y, WHITE);
+                    }
+            }
         EndDrawing();
         //----------------------------------------------------------------------------------
     }
